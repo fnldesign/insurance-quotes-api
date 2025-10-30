@@ -150,6 +150,21 @@ The API will be available at:
 
 Swagger documentation can be accessed at `/swagger`
 
+## Cloud Deployment — Vercel
+
+This project is also deployed on Vercel and can be reached at:
+
+- https://insurance-quotes-api.vercel.app/
+
+Notes and important considerations when using Vercel:
+
+- Environment variables: configure the same variables you use locally in the Vercel dashboard (Project Settings -> Environment Variables). Examples include `DATA_DIR`, `DB_NAME`, `LOG_LEVEL`, `LOGS_PATH`, `MAX_LOG_FILES`, and `CORS_ALLOW_ORIGIN`.
+- Filesystem persistence: Vercel uses an ephemeral filesystem for serverless deployments. This means the local `data/` and `logs/` directories (and any SQLite file inside them) are not a reliable place to store data in production. For persistent storage use a managed database (Postgres, MySQL, or a cloud-hosted SQLite alternative) or an object storage service (S3-compatible) and update `DB_PATH` accordingly.
+- Ports and routing: Vercel manages routing for you; the application will be available at the deployed URL. You don't need to set `HOST` or `PORT` in Vercel — these are handled by the platform.
+- Build & deployment: if you deploy using the provided `Dockerfile`/`docker-compose.yml`, ensure your Vercel project is configured to use a Docker-based deployment or adjust the project to run as a serverless function/ASGI app if desired.
+
+If you want, I can add a short `vercel.json` or deployment notes with exact build settings for this repository.
+
 ## Business Rules
 
 ### Gender Inference
@@ -225,4 +240,6 @@ The application uses TimedRotatingFileHandler for log management:
 
 ## License
 
-[Your License Here]
+This project is licensed under the MIT License. See the `LICENSE` file in the project root for the full license text.
+
+Copyright (c) 2025 fnldesign

@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "app.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "app.py"
+    }
+  ],
+  "functions": {
+    "app.py": {
+      "memory": 512,
+      "maxDuration": 10
+    }
+  },
+  "env": {
+    "LOG_LEVEL": "INFO",
+    "CORS_ALLOW_ORIGIN": "https://insurance-quotes-api.vercel.app",
+    "USE_FILE_LOGS": "false"
+  }
+}

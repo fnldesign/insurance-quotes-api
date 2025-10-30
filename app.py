@@ -20,8 +20,9 @@ MAX_LOG_FILES = int(os.getenv("MAX_LOG_FILES", "30"))
 CORS_ALLOW_ORIGIN = os.getenv("CORS_ALLOW_ORIGIN", "*")
 CORS_ALLOW_HEADERS = os.getenv("CORS_ALLOW_HEADERS", "Content-Type, X-Debug")
 CORS_ALLOW_METHODS = os.getenv("CORS_ALLOW_METHODS", "GET, POST, OPTIONS")
-HOST = os.getenv("HOST", "0.0.0.0")
-PORT = int(os.getenv("PORT", "5000"))
+# Use "or" fallback to protect against empty-string environment values
+HOST = os.getenv("HOST") or "0.0.0.0"
+PORT = int(os.getenv("PORT") or "5000")
 
 # Ensure data directory exists
 os.makedirs(DATA_DIR, exist_ok=True)
