@@ -7,6 +7,11 @@ werkzeug>=3.0,<4
 python-dotenv>=1.0
 requests>=2.31
 psutil>=5.9
+SQLAlchemy>=1.4
+psycopg[binary]
+
+# MySQL driver for SQLAlchemy (used when connecting to MySQL / RDS)
+pymysql>=1.0
 
 # Só mantenha estes se o seu código realmente usar:
 jsonschema>=4.19

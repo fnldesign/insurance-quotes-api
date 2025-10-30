@@ -165,6 +165,40 @@ Notes and important considerations when using Vercel:
 
 If you want, I can add a short `vercel.json` or deployment notes with exact build settings for this repository.
 
+### Serverless (Vercel) runtime notes
+
+When running on Vercel (serverless) you must avoid writing to the project filesystem. Use these settings and steps:
+
+ In the Vercel dashboard (Project → Settings → Environment Variables) set these values:
+ 
+ - `SERVERLESS=true`
+ - `USE_FILE_LOGS=false`
+ - `LOG_LEVEL=INFO`
+ - `CORS_ALLOW_ORIGIN=https://insurance-quotes-api.vercel.app`
+ - `DATABASE_URL` = set to your Postgres (or other) managed DB connection string (recommended for persistence). Example: `postgres://user:pass@host:5432/dbname`
+
+- Do not rely on `DATA_DIR`/`DB_NAME` pointing to a persistent sqlite file — the filesystem is ephemeral on serverless. If you still use sqlite for quick tests, set `DATA_DIR=/tmp` and accept that data is temporary.
+
+- Ensure `USE_FILE_LOGS` is `false` so the app logs to stdout and Vercel captures logs.
+
+- If you plan to deploy using Docker (container) instead of serverless functions, make sure to set `HOST=0.0.0.0` and `PORT=3000` in Vercel environment variables and enable Docker-based deployment.
+
+Quick checklist for a working Vercel deployment:
+
+1. Set environment variables listed above in Vercel.
+2. Add `vercel.json` (included) to configure function memory and timeouts, or use the dashboard settings.
+3. Use a managed `DATABASE_URL` for persistence and verify network access from Vercel to the DB.
+
+The application now emits a startup log which prints the active configuration (SERVERLESS, DB in use, logging mode).
+
+How to verify the startup configuration in Vercel logs:
+
+1. In the Vercel dashboard go to your Project → Deployments and open the deployment you want to inspect.
+2. Click the "Logs" tab.
+3. Search for the string `Starting insurance_app` or `Configuration: SERVERLESS` to find the startup log block.
+
+The startup log includes a sanitized DB display (credentials redacted) and indicates whether the app is running in serverless mode and whether file-based logging is enabled.
+
 ## Business Rules
 
 ### Gender Inference
