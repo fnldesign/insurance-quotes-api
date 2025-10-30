@@ -1,0 +1,129 @@
+openapi: 3.0.0
+info:
+  title: Insurance API
+  description: API for insurance quotes management
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+    description: Local development server
+paths:
+  /health:
+    get:
+      summary: Get API health status
+      description: Returns the health status of the API and its dependencies
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: healthy
+                  database:
+                    type: object
+                    properties:
+                      status:
+                        type: string
+                        example: connected
+                      response_time:
+                        type: number
+                        example: 0.023
+        '503':
+          description: Service unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: unhealthy
+                  errors:
+                    type: array
+                    items:
+                      type: string
+  /info:
+    get:
+      summary: Get API information
+      description: Returns information about the API, including database stats and log sizes
+      responses:
+        '200':
+          description: API information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  database:
+                    type: object
+                    properties:
+                      total_records:
+                        type: integer
+                        example: 1250
+                  logs:
+                    type: object
+                    properties:
+                      total_size_mb:
+                        type: number
+                        example: 15.4
+                      files_count:
+                        type: integer
+                        example: 7
+                  memory:
+                    type: object
+                    properties:
+                      used_mb:
+                        type: number
+                        example: 128.5
+                      total_mb:
+                        type: number
+                        example: 1024
+  /cotacoes:
+    get:
+      summary: List all quotes
+      responses:
+        '200':
+          description: List of quotes
+    post:
+      summary: Create new quote
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - nome
+                - cpf
+                - sexo
+                - dtnasc
+                - capital
+                - inicio_vig
+                - fim_vig
+              properties:
+                nome:
+                  type: string
+                cpf:
+                  type: string
+                sexo:
+                  type: string
+                  enum: [M, F]
+                dtnasc:
+                  type: string
+                  format: date
+                capital:
+                  type: number
+                inicio_vig:
+                  type: string
+                  format: date
+                fim_vig:
+                  type: string
+                  format: date
+      responses:
+        '201':
+          description: Quote created
+        '400':
+          description: Validation error
