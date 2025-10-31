@@ -114,8 +114,8 @@ logger = logging.getLogger()
 logger.setLevel(getattr(logging, LOG_LEVEL.upper(), logging.INFO))
 
 # Remove any existing handlers
-for handler in logger.handlers[:]:
-    logger.removeHandler(handler)
+for log_handler in logger.handlers[:]:
+    logger.removeHandler(log_handler)
 
 # Console handler (always enabled)
 console_handler = logging.StreamHandler()
@@ -158,6 +158,26 @@ LOCK = threading.Lock()
 api = Api(app, version='1.0', title='Insurance API',
           description='API for insurance quotes management',
           doc='/swagger')
+
+# Root route with HTML landing page
+@app.route('/')
+def read_root():
+    try:
+      file_path = os.path.join(app.root_path, "public", "landing_page.html")
+      with open(file_path, "r", encoding="utf-8") as f:
+        html = f.read()
+    except Exception as e:
+      logger.warning(f"Failed to load landing page HTML: {e}")
+      html = (
+        "<!doctype html><html><head><meta charset='utf-8'/>"
+        "<title>Insurance API</title></head>"
+        "<body><h1>Insurance API</h1>"
+        "<p>Landing page not found. Visit <a href='/swagger'>Swagger UI</a>.</p>"
+        "</body></html>"
+      )
+    resp = make_response(html, 200)
+    resp.headers["Content-Type"] = "text/html; charset=utf-8"
+    return add_cors(resp)
 
 # Define namespaces
 ns_health = api.namespace('health', description='Health checks')
@@ -664,10 +684,6 @@ if __name__ == "__main__":
         app.run(host=HOST, port=PORT, debug=(os.getenv("FLASK_DEBUG", "0") == "1"))
 
 
-# Vercel serverless handler: expose the Flask app instance
-# Vercel's Python runtime will invoke this as a WSGI application
-def handler(event, context):
-    """Vercel serverless function handler for Flask app."""
-    # The @vercel/python builder wraps Flask apps automatically,
-    # but we need to ensure the app is initialized before the first request.
-    return app(event, context)
+# Vercel serverless entry point: export the Flask app as a WSGI callable
+# The @vercel/python builder will invoke app(environ, start_response) directly
+handler = app

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Sensedia Insurance API</title>
+        <style>
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+                background-color: #000000; color: #ffffff; line-height: 1.6; min-height: 100vh;
+                display: flex; flex-direction: column;
+            }
+            header { border-bottom: 1px solid #333333; padding: 0; }
+            nav { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; padding: 1rem 2rem; gap: 2rem; }
+            .logo { font-size: 1.25rem; font-weight: 600; color: #ffffff; text-decoration: none; }
+            .nav-links { display: flex; gap: 1.5rem; margin-left: auto; }
+            .nav-links a { text-decoration: none; color: #888888; padding: 0.5rem 1rem; border-radius: 6px; transition: all 0.2s ease; font-size: 0.875rem; font-weight: 500; }
+            .nav-links a:hover { color: #ffffff; background-color: #111111; }
+            main { flex: 1; max-width: 1200px; margin: 0 auto; padding: 4rem 2rem; display: flex; flex-direction: column; align-items: center; text-align: center; }
+            .hero { margin-bottom: 3rem; }
+            .hero-code { margin-top: 2rem; width: 100%; max-width: 900px; }
+            .hero-code pre { background-color: #0a0a0a; border: 1px solid #333333; border-radius: 8px; padding: 1.5rem; text-align: left; }
+            h1 { font-size: 3rem; font-weight: 700; margin-bottom: 1rem; background: linear-gradient(to right, #0070f3, #00d4ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+            .subtitle { font-size: 1.25rem; color: #888888; margin-bottom: 2rem; max-width: 600px; }
+            .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; width: 100%; max-width: 1000px; margin-top: 2rem; }
+            .card { background-color: #111111; border: 1px solid #333333; border-radius: 8px; padding: 1.5rem; transition: all 0.2s ease; text-align: left; }
+            .card:hover { border-color: #0070f3; transform: translateY(-2px); }
+            .card h3 { font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; color: #ffffff; }
+            .card p { color: #888888; font-size: 0.875rem; margin-bottom: 1rem; line-height: 1.5; }
+            .card a { display: inline-flex; align-items: center; color: #0070f3; text-decoration: none; font-size: 0.875rem; font-weight: 500; }
+            .card a:hover { color: #00d4ff; }
+            .status-badge { display: inline-flex; align-items: center; gap: 0.5rem; background-color: #0070f3; color: #ffffff; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 500; margin-bottom: 2rem; }
+            .status-dot { width: 6px; height: 6px; background-color: #00ff88; border-radius: 50%; animation: pulse 2s infinite; }
+            @keyframes pulse {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.5; }
+            }
+            pre { background-color: #0a0a0a; border: 1px solid #333333; border-radius: 6px; padding: 1rem; overflow-x: auto; margin: 0; }
+            code { font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace; font-size: 0.85rem; line-height: 1.5; color: #ffffff; }
+            .keyword { color: #ff79c6; }
+            .string { color: #f1fa8c; }
+            .function { color: #50fa7b; }
+            .method { color: #8be9fd; }
+            .comment { color: #6272a4; }
+            .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin: 2rem 0; width: 100%; max-width: 900px; }
+            .feature { background-color: #0a0a0a; border: 1px solid #222222; border-radius: 6px; padding: 1rem; text-align: center; }
+            .feature-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+            .feature-title { font-size: 0.875rem; color: #888888; }
+            @media (max-width: 768px) {
+                nav { padding: 1rem; flex-direction: column; gap: 1rem; }
+                .nav-links { margin-left: 0; }
+                main { padding: 2rem 1rem; }
+                h1 { font-size: 2rem; }
+                .cards { grid-template-columns: 1fr; }
+                .features { grid-template-columns: repeat(2, 1fr); }
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <nav>
+                <a href="/" class="logo">🛡️ Sensedia Insurance API</a>
+                <div class="nav-links">
+                    <a href="/swagger">API Docs</a>
+                    <a href="/health/">Health</a>
+                </div>
+            </nav>
+        </header>
+        <main>
+            <div class="hero">
+                <div class="status-badge">
+                    <span class="status-dot"></span>
+                    Production Ready
+                </div>
+                <h1>Insurance Quotes API</h1>
+                <p class="subtitle">Flask-based REST API for insurance quotes with gender inference, health monitoring, and MySQL support</p>
+                
+                <div class="features">
+                    <div class="feature">
+                        <div class="feature-icon">🔄</div>
+                        <div class="feature-title">RESTful API</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">📊</div>
+                        <div class="feature-title">Swagger Docs</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">🔍</div>
+                        <div class="feature-title">Gender Inference</div>
+                    </div>
+                    <div class="feature">
+                        <div class="feature-icon">💾</div>
+                        <div class="feature-title">MySQL Ready</div>
+                    </div>
+                </div>
+
+                <div class="hero-code">
+                    <pre><code><span class="comment"># Create a new insurance quote</span>
+<span class="keyword">POST</span> /cotacoes/
+{
+  <span class="string">"nome"</span>: <span class="string">"Sr. João Silva"</span>,
+  <span class="string">"cpf"</span>: <span class="string">"12345678901"</span>,
+  <span class="string">"sexo"</span>: <span class="string">"M"</span>,
+  <span class="string">"dtnasc"</span>: <span class="string">"1990-01-01"</span>,
+  <span class="string">"capital"</span>: 10000.0,
+  <span class="string">"inicio_vig"</span>: <span class="string">"2025-01-01"</span>,
+  <span class="string">"fim_vig"</span>: <span class="string">"2025-12-31"</span>
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="cards">
+                <div class="card">
+                    <h3>📚 Interactive Documentation</h3>
+                    <p>Explore all API endpoints with Swagger UI. Test requests directly from your browser with automatic validation.</p>
+                    <a href="/swagger">Open Swagger UI →</a>
+                </div>
+                <div class="card">
+                    <h3>💚 Health Check</h3>
+                    <p>Monitor API and database health status with detailed response times and connection information.</p>
+                    <a href="/health/">Check Health →</a>
+                </div>
+                <div class="card">
+                    <h3>📋 List Quotes</h3>
+                    <p>Retrieve all insurance quotes with complete details including rates, premiums, and coverage periods.</p>
+                    <a href="/cotacoes/">View Quotes →</a>
+                </div>
+                <div class="card">
+                    <h3>ℹ️ System Info</h3>
+                    <p>Get system statistics including database records, log sizes, and memory usage metrics.</p>
+                    <a href="/info/">System Info →</a>
+                </div>
+            </div>
+
+            <div style="margin-top: 3rem; padding: 2rem; background-color: #0a0a0a; border: 1px solid #222222; border-radius: 8px; max-width: 900px; text-align: left;">
+                <h3 style="margin-bottom: 1rem; color: #ffffff;">Key Features</h3>
+                <ul style="color: #888888; font-size: 0.875rem; line-height: 2; list-style: none; padding-left: 0;">
+                    <li>✓ Title-based gender inference (Sr., Sra., Dr., etc.)</li>
+                    <li>✓ Automatic rate calculation based on age and gender</li>
+                    <li>✓ CPF validation and date range verification</li>
+                    <li>✓ MySQL and SQLite database support</li>
+                    <li>✓ Serverless deployment ready (Vercel)</li>
+                    <li>✓ CORS enabled and configurable</li>
+                    <li>✓ Health monitoring and logging</li>
+                    <li>✓ Docker support with volume persistence</li>
+                </ul>
+            </div>
+        </main>
+    </body>
+    </html>
