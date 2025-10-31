@@ -662,3 +662,12 @@ if __name__ == "__main__":
                 logger.warning("Failed to start startup health check thread: %s", e)
 
         app.run(host=HOST, port=PORT, debug=(os.getenv("FLASK_DEBUG", "0") == "1"))
+
+
+# Vercel serverless handler: expose the Flask app instance
+# Vercel's Python runtime will invoke this as a WSGI application
+def handler(event, context):
+    """Vercel serverless function handler for Flask app."""
+    # The @vercel/python builder wraps Flask apps automatically,
+    # but we need to ensure the app is initialized before the first request.
+    return app(event, context)
