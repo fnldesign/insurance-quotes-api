@@ -231,6 +231,9 @@ def serialize_row(row_dict):
             result[key] = value.strftime("%Y-%m-%d")
         else:
             result[key] = value
+    # Ensure id is a string for API consistency
+    if 'id' in result and result['id'] is not None:
+        result['id'] = str(result['id'])
     return result
 
 # Titles to help infer gender from name
@@ -412,7 +415,7 @@ def _startup_health_check():
         url = f"http://{HOST}:{PORT}/health/"
 
         log_startup()
-        
+
         # Direct DB connection health check
         logger.info("Running startup DB health check (direct connection)")        
 
