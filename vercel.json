@@ -1,15 +1,5 @@
 {
-  "version": 2,
-  "builds": [
-    { "src": "app.py", "use": "@vercel/python" }
-  ],
-  "installCommand": "pip install -r requirements.txt",
-  "routes": [
-    { "src": "/(.*)", "dest": "app.py" }
-  ],
-  "env": {
-    "LOG_LEVEL": "INFO",
-    "CORS_ALLOW_ORIGIN": "https://insurance-quotes-api.vercel.app",
-    "USE_FILE_LOGS": "false"
-  }
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/app.py" }
+  ]
 }
