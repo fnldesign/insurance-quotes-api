@@ -215,6 +215,6 @@ class Cotacao(Resource):
         with conn() as cx:
             res = cx.execute(text("SELECT * FROM cotacoes WHERE id = :id"), {"id": id_})
             r = res.mappings().first()
-        if not r:
+        if r is None:
             api.abort(404, erro="Não encontrado", mensagem="Cotação não localizada")
-        return serialize_row(dict(r))
+        return serialize_row(r)
