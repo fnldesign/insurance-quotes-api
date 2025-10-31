@@ -7,32 +7,15 @@ from flask_restx import Api, Resource, fields
 from sqlalchemy import text
 from datetime import date
 import requests
+import psutil
 
-# Import shared utilities and database functions from app
-# These will be imported after app.py is fully loaded to avoid circular imports
-def get_app_dependencies():
-    """Lazy import to avoid circular dependencies."""
-    from app import (
-        conn, engine, LOCK, logger, validar, calcular, 
-        serialize_row, get_db_health, get_db_stats, get_log_info,
-        limpar_cpf, inferir_sexo_api
-    )
-    import psutil
-    return {
-        'conn': conn,
-        'engine': engine,
-        'LOCK': LOCK,
-        'logger': logger,
-        'validar': validar,
-        'calcular': calcular,
-        'serialize_row': serialize_row,
-        'get_db_health': get_db_health,
-        'get_db_stats': get_db_stats,
-        'get_log_info': get_log_info,
-        'limpar_cpf': limpar_cpf,
-        'inferir_sexo_api': inferir_sexo_api,
-        'psutil': psutil
-    }
+# These imports work because this module is imported AFTER app.py has defined everything
+# Import happens in app.py at line 474: "from endpoints import api_bp"
+from app import (
+    conn, engine, LOCK, logger, validar, calcular,
+    serialize_row, get_db_health, get_db_stats, get_log_info,
+    limpar_cpf, inferir_sexo_api
+)
 
 
 # Create Blueprint
@@ -109,8 +92,7 @@ class HealthCheck(Resource):
     @api.response(503, 'Service unavailable')
     def get(self):
         """Check the health status of the API and its dependencies"""
-        deps = get_app_dependencies()
-        db_health = deps['get_db_health']()
+        db_health = get_db_health()
         health_status = {
             "status": "healthy" if db_health["status"] == "connected" else "unhealthy",
             "database": db_health
@@ -124,16 +106,15 @@ class SystemInfo(Resource):
     @api.response(200, 'System information retrieved', info_model)
     def get(self):
         """Get system information including database stats, log sizes, and memory usage"""
-        deps = get_app_dependencies()
-        process = deps['psutil'].Process()
+        process = psutil.Process()
         memory_info = process.memory_info()
         
         info = {
-            "database": deps['get_db_stats'](),
-            "logs": deps['get_log_info'](),
+            "database": get_db_stats(),
+            "logs": get_log_info(),
             "memory": {
                 "used_mb": round(memory_info.rss / (1024 * 1024), 2),
-                "total_mb": round(deps['psutil'].virtual_memory().total / (1024 * 1024), 2)
+                "total_mb": round(psutil.virtual_memory().total / (1024 * 1024), 2)
             }
         }
         return info
@@ -145,11 +126,10 @@ class CotacoesList(Resource):
     @api.response(200, 'Success', [cotacao_output])
     def get(self):
         """List all insurance quotes"""
-        deps = get_app_dependencies()
-        with deps['conn']() as cx:
+        with conn() as cx:
             res = cx.execute(text("SELECT * FROM cotacoes ORDER BY id DESC"))
             rows = res.mappings().all()
-        return [deps['serialize_row'](dict(r)) for r in rows]
+        return [serialize_row(dict(r)) for r in rows]
 
     @api.doc('create_cotacao')
     @api.expect(cotacao_input)
@@ -157,23 +137,21 @@ class CotacoesList(Resource):
     @api.response(400, 'Validation error', error_model)
     def post(self):
         """Create a new insurance quote"""
-        deps = get_app_dependencies()
-        
         try:
             payload = request.get_json(force=True)
         except Exception as e:
             api.abort(400, erro="Erro de validação", 
                      detalhes=[{"campo":"body","mensagem":"JSON inválido"}])
 
-        erros = deps['validar'](payload)
+        erros = validar(payload)
         if erros:
             api.abort(400, erro="Erro de validação", detalhes=erros)
 
-        calc = deps['calcular'](payload)
+        calc = calcular(payload)
         registro = {
             "nome": payload["nome"].strip(),
-            "cpf": deps['limpar_cpf'](str(payload["cpf"])),
-            "sexo": deps['inferir_sexo_api'](payload["nome"].strip()) or payload["sexo"],
+            "cpf": limpar_cpf(str(payload["cpf"])),
+            "sexo": inferir_sexo_api(payload["nome"].strip()) or payload["sexo"],
             "dtnasc": payload["dtnasc"],
             "capital": float(payload["capital"]),
             "inicio_vig": payload["inicio_vig"],
@@ -206,12 +184,12 @@ class CotacoesList(Resource):
             "descricao": registro["descricao"],
         }
 
-        with deps['LOCK'], deps['engine'].begin() as cx:
-            if deps['engine'].dialect.name in ("postgresql", "postgres"):
+        with LOCK, engine.begin() as cx:
+            if engine.dialect.name in ("postgresql", "postgres"):
                 # Postgres supports RETURNING
                 res = cx.execute(text(insert_sql.text + " RETURNING id"), params)
                 registro_id = int(res.scalar_one())
-            elif deps['engine'].dialect.name == "mysql":
+            elif engine.dialect.name == "mysql":
                 # MySQL: use LAST_INSERT_ID()
                 cx.execute(insert_sql, params)
                 last_id = cx.execute(text("SELECT LAST_INSERT_ID()")).scalar()
@@ -234,10 +212,9 @@ class Cotacao(Resource):
     @api.response(404, 'Quote not found', error_model)
     def get(self, id_):
         """Get an insurance quote by ID"""
-        deps = get_app_dependencies()
-        with deps['conn']() as cx:
+        with conn() as cx:
             res = cx.execute(text("SELECT * FROM cotacoes WHERE id = :id"), {"id": id_})
             r = res.mappings().first()
         if not r:
             api.abort(404, erro="Não encontrado", mensagem="Cotação não localizada")
-        return deps['serialize_row'](dict(r))
+        return serialize_row(dict(r))

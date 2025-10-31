@@ -497,7 +497,6 @@ if __name__ == "__main__":
 
         app.run(host=HOST, port=PORT, debug=(os.getenv("FLASK_DEBUG", "0") == "1"))
 
-
 # Vercel serverless entry point: export the Flask app as a WSGI callable
 # The @vercel/python builder will invoke app(environ, start_response) directly
 handler = app
