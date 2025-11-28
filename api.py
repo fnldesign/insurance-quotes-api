@@ -1,2 +1,3 @@
 from main_fastapi import app
-handler = app
+# Exporta FastAPI app como 'app' para Vercel ASGI
+# handler = app
