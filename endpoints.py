@@ -9,15 +9,6 @@ from datetime import date
 import requests
 import psutil
 
-# These imports work because this module is imported AFTER app.py has defined everything
-# Import happens in app.py at line 474: "from endpoints import api_bp"
-from app import (
-    conn, engine, LOCK, logger, validar, calcular,
-    serialize_row, get_db_health, get_db_stats, get_log_info,
-    limpar_cpf, inferir_sexo_api
-)
-
-
 # Create Blueprint
 api_bp = Blueprint('api', __name__)
 
@@ -92,6 +83,7 @@ class HealthCheck(Resource):
     @api.response(503, 'Service unavailable')
     def get(self):
         """Check the health status of the API and its dependencies"""
+        from app import get_db_health
         db_health = get_db_health()
         health_status = {
             "status": "healthy" if db_health["status"] == "connected" else "unhealthy",
@@ -106,6 +98,7 @@ class SystemInfo(Resource):
     @api.response(200, 'System information retrieved', info_model)
     def get(self):
         """Get system information including database stats, log sizes, and memory usage"""
+        from app import get_db_stats, get_log_info
         process = psutil.Process()
         memory_info = process.memory_info()
         
@@ -126,6 +119,7 @@ class CotacoesList(Resource):
     @api.response(200, 'Success', [cotacao_output])
     def get(self):
         """List all insurance quotes"""
+        from app import conn, serialize_row
         with conn() as cx:
             res = cx.execute(text("SELECT * FROM cotacoes ORDER BY id DESC"))
             rows = res.mappings().all()
@@ -137,6 +131,7 @@ class CotacoesList(Resource):
     @api.response(400, 'Validation error', error_model)
     def post(self):
         """Create a new insurance quote"""
+        from app import validar, calcular, limpar_cpf, inferir_sexo_api, LOCK, engine
         try:
             payload = request.get_json(force=True)
         except Exception as e:
@@ -212,6 +207,7 @@ class Cotacao(Resource):
     @api.response(404, 'Quote not found', error_model)
     def get(self, id_):
         """Get an insurance quote by ID"""
+        from app import conn, serialize_row
         with conn() as cx:
             res = cx.execute(text("SELECT * FROM cotacoes WHERE id = :id"), {"id": id_})
             r = res.mappings().first()

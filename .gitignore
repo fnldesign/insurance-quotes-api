@@ -21,7 +21,7 @@ wheels/
 *.egg
 
 # Virtual Environment
-venv/
+.venv
 env/
 ENV/
 .env
@@ -75,3 +75,29 @@ MANIFEST
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Arquivos de configuração sensíveis
+.env.example
+
+# Deploy/serverless
+.vercel/
+
+# Arquivos públicos gerados
+# Se landing_page.html for gerado, descomente a linha abaixo
+# public/landing_page.html
+
+# Flask/instance
+instance/
+
+# Temporários
+*.out
+*.tmp
+tmp/
+
+# Docker
+*.pid
+docker-compose.override.yml
+docker-compose.*.yml
+
+# Testes
+ test-results/
