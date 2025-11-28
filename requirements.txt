@@ -20,3 +20,8 @@ pytz>=2023.3
 
 # Obs.: não fixe dependências transitivas do requests (idna, urllib3, certifi, charset-normalizer)
 # para evitar conflitos no build do Vercel.
+
+# FastAPI and Uvicorn
+fastapi
+uvicorn
+gunicorn
